@@ -38,7 +38,7 @@ def process(df):
 
 def main():
     loc = './data/picks/'
-    no = ['Salary.csv', 'results.csv']
+    no = ['Salary.csv', 'results.csv', 'results.png']
     files = [loc + f for f in os.listdir(loc) if f not in no] 
     df = pd.concat([pd.read_csv(f) for f in files])
     translate = {v: v for v in df['Pos'].values}
@@ -75,8 +75,8 @@ def main():
     for pos in df.columns:
         plt.plot(df[pos].values)
     plt.legend(labels = df.columns)
+    plt.savefig('./data/picks/results.png', dpi=500)
     plt.show()
-    plt.savefig('./data/picks/results.png')
 
     print(df)
 
