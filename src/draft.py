@@ -12,6 +12,7 @@ import os
 import warnings
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 100)
@@ -22,10 +23,10 @@ warnings.filterwarnings('ignore')
 def process(df):
     df['SUCCESS'] = df['CarAV'] > np.mean(df['CarAV'])
     df['SUCCESS'] = df['SUCCESS'].astype(int)
-    X = df['Pick'].values
-    Y = df['SUCCESS'].values
+    X_train = df['Pick'].values
+    Y_train = df['SUCCESS'].values
     model = LogisticRegression()
-    X_train, X_test, Y_train, Y_test = train_test_split(X, Y)
+    #X_train, X_test, Y_train, Y_test = train_test_split(X, Y)
     model.fit(X_train.reshape(-1,1), Y_train)
     preds = model.predict_proba(np.array(range(1,257)).reshape(-1,1))
     preds = [p[1] for p in preds]
@@ -37,7 +38,8 @@ def process(df):
 
 def main():
     loc = './data/picks/'
-    files = [loc + f for f in os.listdir(loc) if f != 'Salary.csv']
+    no = ['Salary.csv', 'results.csv']
+    files = [loc + f for f in os.listdir(loc) if f not in no] 
     df = pd.concat([pd.read_csv(f) for f in files])
     translate = {v: v for v in df['Pos'].values}
     translate['NT'] = 'DT'
@@ -69,6 +71,13 @@ def main():
     df.index = df.index + 1
     df = df[['QB', 'RB', 'WR', 'TE', 'T', 'iOL', 'EDGE', 'DT', 'LB', 'DB']]
     df.to_csv('./data/picks/results.csv')
+
+    for pos in df.columns:
+        plt.plot(df[pos].values)
+    plt.legend(labels = df.columns)
+    plt.show()
+    plt.savefig('./data/picks/results.png')
+
     print(df)
 
 
